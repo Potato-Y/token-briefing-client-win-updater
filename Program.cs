@@ -16,7 +16,7 @@ namespace token_briefing_client_win_updater
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new updater());
         }
     }
 }
