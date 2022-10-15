@@ -70,10 +70,10 @@ namespace token_briefing_client_win_updater
                     var lines = File.ReadLines(filePath + "serverip.txt", Encoding.UTF8);
                     foreach (var line in lines)
                     {
-                        dataLink = "http://" + line + "/api/v1/client/updater";
+                        dataLink = "http://" + line + "/api/v1/client/download/win/setup";
                     }
 
-                    string tmpSetupPath = Path.Combine(Application.StartupPath, "installer.txt");
+                    string tmpSetupPath = Path.Combine(Application.StartupPath, "setup.exe");
                     fileDownloader.DownloadFileAsync(new Uri(dataLink), tmpSetupPath, tmpSetupPath);
 
                     Process.Start(tmpSetupPath);
