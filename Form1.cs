@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
 using System.Net;
 using System.Net.Http;
 using System.Windows.Forms;
@@ -15,7 +16,9 @@ using System.IO;
 namespace token_briefing_client_win_updater
 {
     public partial class updater : Form
+
     {
+        string tmpSetupPath;
         public updater()
         {
             InitializeComponent();
@@ -26,6 +29,7 @@ namespace token_briefing_client_win_updater
             try
             {
                 label1.Text = "기존 프로그램 종료 중";
+
                 Process[] processesList = Process.GetProcessesByName("token-briefing-client");
 
                 if (processesList.Length > 0)
@@ -64,31 +68,42 @@ namespace token_briefing_client_win_updater
                     var server_check_response = client.GetAsync("https://github.com/Potato-Y/Game-Utility-App/blob/master/release/release%20guide.md").Result; //웹으로부터 다운로드 
                     var html = server_check_response.Content.ReadAsStringAsync().Result; //다운로드 결과를 html 로 받아 온다.
 
-                    string filePath = @"C:\Users\" + ((System.Security.Principal.WindowsIdentity.GetCurrent().Name).Split('\\')[1]) + @"\AppData\Local\token-briefing-client\Data\";
+                    string filePath = @"C:\Users\" + ((System.Security.Principal.WindowsIdentity.GetCurrent().Name).Split('\\')[1]) + @"\AppData\Local\token-briefing-client\";
                     string dataLink = "";
 
-                    var lines = File.ReadLines(filePath + "serverip.txt", Encoding.UTF8);
-                    foreach (var line in lines)
+                    try
                     {
-                        dataLink = "http://" + line + "/api/v1/client/download/win/setup";
+                        var lines = File.ReadLines(filePath + "serverip.txt", Encoding.UTF8);
+                        foreach (var line in lines)
+                        {
+                            dataLink = "http://" + line + "/api/v1/client/download/win/setup";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("업데이트 파일을 받는 중 오류가 발생했습니다.\n" + ex + "\nserverIp:" + dataLink);
+                        Application.Exit();
                     }
 
-                    string tmpSetupPath = Path.Combine(Application.StartupPath, "setup.exe");
+                    tmpSetupPath = Path.Combine(Application.StartupPath, "setup.exe");
+                    fileDownloader.DownloadFileCompleted += fileDownloader_DownloadFileCompleted;
                     fileDownloader.DownloadFileAsync(new Uri(dataLink), tmpSetupPath, tmpSetupPath);
 
-                    Process.Start(tmpSetupPath);
                     label1.Text = "완료";
-
-                    Application.Exit();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("업데이트 파일을 받는 중 오류가 발생했습니다.");
+                MessageBox.Show("업데이트 파일을 받는 중 오류가 발생했습니다.\n" + ex);
                 Application.Exit();
             }
 
+        }
 
+        void fileDownloader_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            Process.Start(tmpSetupPath);
+            Application.Exit();
         }
     }
 }
