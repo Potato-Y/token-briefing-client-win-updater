@@ -64,10 +64,7 @@ namespace token_briefing_client_win_updater
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
                     label1.Text = "파일 다운로드를 시작";
-                    var client = new HttpClient(); //웹으로부터 다운로드 받을 수 있는 클래스의 인스턴스를 제작 한다.
-                    var server_check_response = client.GetAsync("https://github.com/Potato-Y/Game-Utility-App/blob/master/release/release%20guide.md").Result; //웹으로부터 다운로드 
-                    var html = server_check_response.Content.ReadAsStringAsync().Result; //다운로드 결과를 html 로 받아 온다.
-
+                   
                     string filePath = @"C:\Users\" + ((System.Security.Principal.WindowsIdentity.GetCurrent().Name).Split('\\')[1]) + @"\AppData\Local\token-briefing-client\";
                     string dataLink = "";
 
